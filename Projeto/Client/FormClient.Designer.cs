@@ -41,6 +41,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.labelNome = new System.Windows.Forms.Label();
+            this.textBoxNome = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // labelMessage
@@ -81,7 +83,7 @@
             // 
             // textBoxIP
             // 
-            this.textBoxIP.Location = new System.Drawing.Point(220, 19);
+            this.textBoxIP.Location = new System.Drawing.Point(415, 20);
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(100, 20);
             this.textBoxIP.TabIndex = 6;
@@ -98,9 +100,9 @@
             // 
             // buttonConnect
             // 
-            this.buttonConnect.Location = new System.Drawing.Point(489, 12);
+            this.buttonConnect.Location = new System.Drawing.Point(685, 12);
             this.buttonConnect.Name = "buttonConnect";
-            this.buttonConnect.Size = new System.Drawing.Size(85, 33);
+            this.buttonConnect.Size = new System.Drawing.Size(97, 33);
             this.buttonConnect.TabIndex = 5;
             this.buttonConnect.Text = "Conectar";
             this.buttonConnect.UseVisualStyleBackColor = true;
@@ -108,7 +110,7 @@
             // 
             // buttonQuit
             // 
-            this.buttonQuit.Location = new System.Drawing.Point(685, 12);
+            this.buttonQuit.Location = new System.Drawing.Point(685, 54);
             this.buttonQuit.Name = "buttonQuit";
             this.buttonQuit.Size = new System.Drawing.Size(98, 33);
             this.buttonQuit.TabIndex = 4;
@@ -129,7 +131,7 @@
             // labelIP
             // 
             this.labelIP.AutoSize = true;
-            this.labelIP.Location = new System.Drawing.Point(194, 22);
+            this.labelIP.Location = new System.Drawing.Point(389, 23);
             this.labelIP.Name = "labelIP";
             this.labelIP.Size = new System.Drawing.Size(20, 13);
             this.labelIP.TabIndex = 9;
@@ -138,7 +140,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(335, 22);
+            this.label3.Location = new System.Drawing.Point(537, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(29, 13);
             this.label3.TabIndex = 10;
@@ -146,7 +148,7 @@
             // 
             // textBoxPort
             // 
-            this.textBoxPort.Location = new System.Drawing.Point(370, 19);
+            this.textBoxPort.Location = new System.Drawing.Point(572, 19);
             this.textBoxPort.Name = "textBoxPort";
             this.textBoxPort.Size = new System.Drawing.Size(100, 20);
             this.textBoxPort.TabIndex = 11;
@@ -160,11 +162,29 @@
             this.label2.TabIndex = 12;
             this.label2.Text = "Mensagens recebidas:";
             // 
+            // labelNome
+            // 
+            this.labelNome.AutoSize = true;
+            this.labelNome.Location = new System.Drawing.Point(225, 23);
+            this.labelNome.Name = "labelNome";
+            this.labelNome.Size = new System.Drawing.Size(38, 13);
+            this.labelNome.TabIndex = 13;
+            this.labelNome.Text = "Nome:";
+            // 
+            // textBoxNome
+            // 
+            this.textBoxNome.Location = new System.Drawing.Point(269, 19);
+            this.textBoxNome.Name = "textBoxNome";
+            this.textBoxNome.Size = new System.Drawing.Size(100, 20);
+            this.textBoxNome.TabIndex = 14;
+            // 
             // FormClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 472);
+            this.Controls.Add(this.textBoxNome);
+            this.Controls.Add(this.labelNome);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBoxPort);
             this.Controls.Add(this.label3);
@@ -201,6 +221,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxPort;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelNome;
+        private System.Windows.Forms.TextBox textBoxNome;
     }
 }
 

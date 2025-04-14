@@ -5,11 +5,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Client
 {
     public partial class FormClient : Form
     {
+        private string username = "Anónimo";
         private TcpClient client;
         private NetworkStream networkStream;
         private ProtocolSI protocolSI;
@@ -34,10 +36,16 @@ namespace Client
             {
                 string ip = textBoxIP.Text;
                 int port = int.Parse(textBoxPort.Text);
+                username = string.IsNullOrWhiteSpace(textBoxNome.Text) ? "Anónimo" : textBoxNome.Text.Trim();
                 client = new TcpClient();
                 client.Connect(IPAddress.Parse(ip), port);
 
                 networkStream = client.GetStream();
+
+                // Enviar nome ao servidor
+                byte[] namePacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
+                networkStream.Write(namePacket, 0, namePacket.Length);
+
                 labelEstado.Text = "Ligado";
 
                 // Iniciar thread para escutar mensagens
@@ -64,7 +72,8 @@ namespace Client
             byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msg);
             networkStream.Write(packet, 0, packet.Length);
 
-            AppendMessage("[EU] " + msg);
+            AppendMessage("[" + username + "] " + msg);
+
         }
 
 
@@ -86,7 +95,8 @@ namespace Client
                     {
                         case ProtocolSICmdType.DATA:
                             string msg = tempProtocol.GetStringFromData();
-                            AppendMessage("[Servidor] " + msg);
+                            AppendMessage(msg); 
+
 
                             // ACK
                             byte[] ack = tempProtocol.Make(ProtocolSICmdType.ACK);

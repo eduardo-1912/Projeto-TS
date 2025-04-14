@@ -1,4 +1,4 @@
-﻿using EI.SI;
+﻿ using EI.SI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,8 @@ namespace Server
 {
     internal class Program
     {
+        private string clientName = "Desconhecido";
+
         private const int PORT = 10000;
         private static TcpListener listener;
         private static List<ClientHandler> clients = new List<ClientHandler>();
@@ -59,6 +61,22 @@ namespace Server
             }
         }
 
+        public static void BroadcastServerMessage(string message)
+        {
+            byte[] data;
+            ProtocolSI protocol = new ProtocolSI();
+            data = protocol.Make(ProtocolSICmdType.DATA, "[Servidor] " + message);
+
+            lock (lockObject)
+            {
+                foreach (var client in clients)
+                {
+                    client.SendMessage(data);
+                }
+            }
+        }
+
+
         public static void RemoveClient(ClientHandler client)
         {
             lock (lockObject)
@@ -72,6 +90,9 @@ namespace Server
     {
         private TcpClient client;
         private NetworkStream stream;
+
+        private string clientName = "Anónimo";
+
         private ProtocolSI protocol;
 
         public ClientHandler(TcpClient client)
@@ -85,33 +106,45 @@ namespace Server
         {
             try
             {
-                Console.WriteLine("Novo cliente ligado.");
+                // Primeiro pacote deve ser o nome
+                ProtocolSI localProtocol = new ProtocolSI();
+                int bytesRead = stream.Read(localProtocol.Buffer, 0, localProtocol.Buffer.Length);
+                if (localProtocol.GetCmdType() == ProtocolSICmdType.USER_OPTION_1)
+                {
+                    clientName = localProtocol.GetStringFromData();
+                    Console.WriteLine("Novo cliente ligado [" + clientName + "]");
+                    Program.BroadcastServerMessage(clientName + " entrou no chat.");
+
+                }
 
                 while (true)
                 {
-                    ProtocolSI localProtocol = new ProtocolSI();
-                    int bytesRead = stream.Read(localProtocol.Buffer, 0, localProtocol.Buffer.Length);
-
+                    localProtocol = new ProtocolSI();
+                    bytesRead = stream.Read(localProtocol.Buffer, 0, localProtocol.Buffer.Length);
                     if (bytesRead == 0) break;
 
                     switch (localProtocol.GetCmdType())
                     {
                         case ProtocolSICmdType.DATA:
                             string msg = localProtocol.GetStringFromData();
-                            Console.WriteLine("Mensagem recebida: " + msg);
-                            Program.BroadcastMessage(msg, this);
+                            Console.WriteLine("Mensagem recebida [" + clientName + "] : " + msg);
+
+                            // Montar mensagem com nome
+                            string fullMsg = "[" + clientName + "] " + msg;
+                            Program.BroadcastMessage(fullMsg, this);
 
                             byte[] ack = localProtocol.Make(ProtocolSICmdType.ACK);
                             stream.Write(ack, 0, ack.Length);
                             break;
 
                         case ProtocolSICmdType.EOT:
-                            Console.WriteLine("Cliente terminou ligação.");
+                            Console.WriteLine(clientName + " terminou ligação.");
                             byte[] ackEot = localProtocol.Make(ProtocolSICmdType.ACK);
                             stream.Write(ackEot, 0, ackEot.Length);
                             return;
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -121,6 +154,7 @@ namespace Server
             {
                 stream?.Close();
                 client?.Close();
+                Program.BroadcastServerMessage(clientName + " saiu do chat.");
                 Program.RemoveClient(this);
             }
         }
@@ -137,5 +171,7 @@ namespace Server
                 Console.WriteLine("Erro ao enviar mensagem para um cliente.");
             }
         }
+
+
     }
 }
