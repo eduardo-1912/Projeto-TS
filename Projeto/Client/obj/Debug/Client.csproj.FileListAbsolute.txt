@@ -1,0 +1,12 @@
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\bin\Debug\Client.exe.config
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\bin\Debug\Client.exe
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\bin\Debug\Client.pdb
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\bin\Debug\ProtocolSI.dll
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.csproj.Up2Date
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.exe
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.pdb
+C:\Users\Ducas\OneDrive - IPLeiria\TS\Projeto-TS\Projeto\Client\obj\Debug\Client.FormClient.resources
