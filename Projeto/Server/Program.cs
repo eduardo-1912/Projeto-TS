@@ -49,17 +49,34 @@ namespace Server
             ProtocolSI protocol = new ProtocolSI();
             data = protocol.Make(ProtocolSICmdType.DATA, message);
 
+            List<ClientHandler> disconnectedClients = new List<ClientHandler>();
+
             lock (lockObject)
             {
-                foreach (var client in clients)
+                foreach (var client in clients.ToList())
                 {
                     if (client != sender)
                     {
-                        client.SendMessage(data);
+                        try
+                        {
+                            client.SendMessage(data);
+                        }
+                        catch
+                        {
+                            disconnectedClients.Add(client);
+                        }
                     }
+                }
+
+                foreach (var client in disconnectedClients)
+                {
+                    clients.Remove(client);
                 }
             }
         }
+
+
+
 
         public static void BroadcastServerMessage(string message)
         {
@@ -67,14 +84,32 @@ namespace Server
             ProtocolSI protocol = new ProtocolSI();
             data = protocol.Make(ProtocolSICmdType.DATA, "[Servidor] " + message);
 
+            List<ClientHandler> disconnectedClients = new List<ClientHandler>();
+
             lock (lockObject)
             {
-                foreach (var client in clients)
+                foreach (var client in clients.ToList())
                 {
-                    client.SendMessage(data);
+                    try
+                    {
+                        client.SendMessage(data);
+                    }
+                    catch
+                    {
+                        disconnectedClients.Add(client); // Marca para remoção, sem dar erro na consola
+                    }
+                }
+
+                // Remover todos os clientes falhados
+                foreach (var client in disconnectedClients)
+                {
+                    clients.Remove(client);
                 }
             }
         }
+
+
+
 
 
         public static void RemoveClient(ClientHandler client)
@@ -168,9 +203,12 @@ namespace Server
             }
             catch
             {
-                Console.WriteLine("Erro ao enviar mensagem para um cliente.");
+                throw; // Lança para que seja tratado fora, na Broadcast
             }
         }
+
+
+
 
 
     }

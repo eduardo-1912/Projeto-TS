@@ -57,11 +57,12 @@
             // labelEstado
             // 
             this.labelEstado.AutoSize = true;
-            this.labelEstado.Location = new System.Drawing.Point(14, 52);
+            this.labelEstado.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelEstado.Location = new System.Drawing.Point(14, 45);
             this.labelEstado.Name = "labelEstado";
-            this.labelEstado.Size = new System.Drawing.Size(43, 13);
+            this.labelEstado.Size = new System.Drawing.Size(50, 16);
             this.labelEstado.TabIndex = 1;
-            this.labelEstado.Text = "Estado:";
+            this.labelEstado.Text = "Estado";
             // 
             // textBoxMessage
             // 
@@ -199,7 +200,7 @@
             this.Controls.Add(this.labelEstado);
             this.Controls.Add(this.labelMessage);
             this.Name = "FormClient";
-            this.Text = "Form1";
+            this.Text = "SAFECHAT";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClient_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

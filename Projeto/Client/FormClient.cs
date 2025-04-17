@@ -1,5 +1,6 @@
 ﻿using EI.SI;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -21,13 +22,28 @@ namespace Client
         {
             InitializeComponent();
             protocolSI = new ProtocolSI();
-            labelEstado.Text = "Desligado";
+            AtualizarEstado("Desconectado", Color.Red);
 
             textBoxIP.Text = "127.0.0.1";
             textBoxPort.Text = "10000";
 
 
         }
+
+        private void ToggleConnectionUI(bool isConnected)
+        {
+            textBoxIP.Enabled = !isConnected;
+            textBoxPort.Enabled = !isConnected;
+            textBoxNome.Enabled = !isConnected;
+            buttonConnect.Enabled = !isConnected;
+        }
+
+        private void AtualizarEstado(string estado, Color cor)
+        {
+            labelEstado.Text = estado;
+            labelEstado.ForeColor = cor;
+        }
+
 
         // Conectar ao servidor
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -46,12 +62,15 @@ namespace Client
                 byte[] namePacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
                 networkStream.Write(namePacket, 0, namePacket.Length);
 
-                labelEstado.Text = "Ligado";
+                AtualizarEstado("Conectado", Color.Green);
 
                 // Iniciar thread para escutar mensagens
                 receiveThread = new Thread(ReceiveMessages);
                 receiveThread.IsBackground = true;
                 receiveThread.Start();
+
+                ToggleConnectionUI(true);
+
             }
             catch (Exception ex)
             {
@@ -157,14 +176,27 @@ namespace Client
                 client?.Close();
             }
             catch { }
+
+            ToggleConnectionUI(false);
+            AtualizarEstado("Desconectado", Color.Red);
+
+
+
         }
 
         // Botão sair
         private void buttonQuit_Click(object sender, EventArgs e)
         {
-            CloseClient();
-            Application.Exit();
+            if (client != null && client.Connected)
+            {
+                CloseClient(); // Apenas desconecta
+            }
+            else
+            {
+                Application.Exit(); // Fecha o programa completamente
+            }
         }
+
 
         // Ao fechar o formulário
         private void FormClient_FormClosing(object sender, FormClosingEventArgs e)
