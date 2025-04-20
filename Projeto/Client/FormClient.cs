@@ -17,13 +17,17 @@ namespace Client
         private NetworkStream networkStream;
         private ProtocolSI protocolSI;
         private Thread receiveThread;
+        private bool isRunning = false;
+
 
         public FormClient()
         {
             InitializeComponent();
+
+            ToggleConnectionUI(false);
+
             protocolSI = new ProtocolSI();
             AtualizarEstado("Desconectado", Color.Red);
-
             textBoxIP.Text = "127.0.0.1";
             textBoxPort.Text = "10000";
 
@@ -36,6 +40,10 @@ namespace Client
             textBoxPort.Enabled = !isConnected;
             textBoxNome.Enabled = !isConnected;
             buttonConnect.Enabled = !isConnected;
+
+            buttonSend.Enabled = isConnected;
+            textBoxMessage.Enabled = isConnected;
+
         }
 
         private void AtualizarEstado(string estado, Color cor)
@@ -57,6 +65,9 @@ namespace Client
                 client.Connect(IPAddress.Parse(ip), port);
 
                 networkStream = client.GetStream();
+
+                isRunning = true;
+
 
                 // Enviar nome ao servidor
                 byte[] namePacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
@@ -103,7 +114,7 @@ namespace Client
         {
             try
             {
-                while (true)
+                while (isRunning)
                 {
                     ProtocolSI tempProtocol = new ProtocolSI();
                     int bytesRead = networkStream.Read(tempProtocol.Buffer, 0, tempProtocol.Buffer.Length);
@@ -114,10 +125,8 @@ namespace Client
                     {
                         case ProtocolSICmdType.DATA:
                             string msg = tempProtocol.GetStringFromData();
-                            AppendMessage(msg); 
+                            AppendMessage(msg);
 
-
-                            // ACK
                             byte[] ack = tempProtocol.Make(ProtocolSICmdType.ACK);
                             networkStream.Write(ack, 0, ack.Length);
                             break;
@@ -137,9 +146,11 @@ namespace Client
             }
             catch (Exception ex)
             {
-                AppendMessage("[Erro inesperado] " + ex.Message);
+                if (isRunning) // Evita mostrar erro se a thread estiver a terminar naturalmente
+                    AppendMessage("[Erro inesperado] " + ex.Message);
             }
         }
+
 
 
 
@@ -164,6 +175,8 @@ namespace Client
         {
             try
             {
+                isRunning = false;
+
                 if (client != null && client.Connected)
                 {
                     byte[] eot = protocolSI.Make(ProtocolSICmdType.EOT);
@@ -171,7 +184,7 @@ namespace Client
                     networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                 }
 
-                receiveThread?.Abort();
+                receiveThread?.Join(); // Espera a thread terminar em vez de abortar
                 networkStream?.Close();
                 client?.Close();
             }

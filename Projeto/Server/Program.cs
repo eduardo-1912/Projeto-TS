@@ -162,7 +162,7 @@ namespace Server
                     {
                         case ProtocolSICmdType.DATA:
                             string msg = localProtocol.GetStringFromData();
-                            Console.WriteLine("Mensagem recebida [" + clientName + "] : " + msg);
+                            Console.WriteLine("Mensagem recebida [" + clientName + "]: " + msg);
 
                             // Montar mensagem com nome
                             string fullMsg = "[" + clientName + "] " + msg;

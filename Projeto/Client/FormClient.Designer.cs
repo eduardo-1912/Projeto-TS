@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelMessage = new System.Windows.Forms.Label();
+            this.labelMensagem = new System.Windows.Forms.Label();
             this.labelEstado = new System.Windows.Forms.Label();
             this.textBoxMessage = new System.Windows.Forms.TextBox();
             this.buttonSend = new System.Windows.Forms.Button();
@@ -40,19 +40,19 @@
             this.labelIP = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxPort = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelMensagensRecebidas = new System.Windows.Forms.Label();
             this.labelNome = new System.Windows.Forms.Label();
             this.textBoxNome = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // labelMessage
+            // labelMensagem
             // 
-            this.labelMessage.AutoSize = true;
-            this.labelMessage.Location = new System.Drawing.Point(12, 301);
-            this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(178, 13);
-            this.labelMessage.TabIndex = 0;
-            this.labelMessage.Text = "Mensagem a enviar para o Servidor:";
+            this.labelMensagem.AutoSize = true;
+            this.labelMensagem.Location = new System.Drawing.Point(12, 301);
+            this.labelMensagem.Name = "labelMensagem";
+            this.labelMensagem.Size = new System.Drawing.Size(178, 13);
+            this.labelMensagem.TabIndex = 0;
+            this.labelMensagem.Text = "Mensagem a enviar para o Servidor:";
             // 
             // labelEstado
             // 
@@ -91,6 +91,9 @@
             // 
             // richTextBoxChat
             // 
+            this.richTextBoxChat.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.richTextBoxChat.Enabled = false;
+            this.richTextBoxChat.ForeColor = System.Drawing.Color.Black;
             this.richTextBoxChat.Location = new System.Drawing.Point(12, 113);
             this.richTextBoxChat.Name = "richTextBoxChat";
             this.richTextBoxChat.ReadOnly = true;
@@ -154,14 +157,14 @@
             this.textBoxPort.Size = new System.Drawing.Size(100, 20);
             this.textBoxPort.TabIndex = 11;
             // 
-            // label2
+            // labelMensagensRecebidas
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 97);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(114, 13);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "Mensagens recebidas:";
+            this.labelMensagensRecebidas.AutoSize = true;
+            this.labelMensagensRecebidas.Location = new System.Drawing.Point(9, 97);
+            this.labelMensagensRecebidas.Name = "labelMensagensRecebidas";
+            this.labelMensagensRecebidas.Size = new System.Drawing.Size(114, 13);
+            this.labelMensagensRecebidas.TabIndex = 12;
+            this.labelMensagensRecebidas.Text = "Mensagens recebidas:";
             // 
             // labelNome
             // 
@@ -186,7 +189,7 @@
             this.ClientSize = new System.Drawing.Size(800, 472);
             this.Controls.Add(this.textBoxNome);
             this.Controls.Add(this.labelNome);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.labelMensagensRecebidas);
             this.Controls.Add(this.textBoxPort);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.labelIP);
@@ -198,7 +201,7 @@
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.textBoxMessage);
             this.Controls.Add(this.labelEstado);
-            this.Controls.Add(this.labelMessage);
+            this.Controls.Add(this.labelMensagem);
             this.Name = "FormClient";
             this.Text = "SAFECHAT";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormClient_FormClosing);
@@ -209,7 +212,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label labelMessage;
+        private System.Windows.Forms.Label labelMensagem;
         private System.Windows.Forms.Label labelEstado;
         private System.Windows.Forms.TextBox textBoxMessage;
         private System.Windows.Forms.Button buttonSend;
@@ -221,7 +224,7 @@
         private System.Windows.Forms.Label labelIP;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxPort;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelMensagensRecebidas;
         private System.Windows.Forms.Label labelNome;
         private System.Windows.Forms.TextBox textBoxNome;
     }
