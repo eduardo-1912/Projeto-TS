@@ -12,62 +12,87 @@ namespace Server
 {
     internal class Program
     {
-        private string clientName = "Desconhecido";
-
+        // PORT DE ESCUTA DO SERVIDOR
         private const int PORT = 10000;
+
+        // RESPONSÁVEL POR ACEITAR CONEXÕES TCP
         private static TcpListener listener;
+
+        // LISTA DE CLIENTES CONECTADOS
         private static List<ClientHandler> clients = new List<ClientHandler>();
+
+        // OBJETO DE BLOQUEIO PARA ACESSO À LISTA DE CLIENTES
         private static object lockObject = new object();
 
+        // MÉTODO MAIN
         static void Main(string[] args)
         {
+            // DEFINIÇÃO DO ENDPOINT (IP + PORT)
             IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, PORT);
+
+            // CRIAÇÃO DO LISTENER TCP
             listener = new TcpListener(endpoint);
 
+            // INICIAR A ESCUTA DE CONEXÕES
             listener.Start();
             Console.WriteLine("Servidor pronto. À escuta na porta " + PORT);
 
+            // CICLO INFINITO PARA ACEITAR CLIENTES
             while (true)
             {
+                // ACEITAR NOVO CLIENTE
                 TcpClient client = listener.AcceptTcpClient();
+
+                // CRIAR HANDLER PARA O CLIENTE
                 ClientHandler handler = new ClientHandler(client);
 
+                // ADICIONAR O CLIENTE À LISTA COM LOCK (SEGURANÇA DE THREADS)
                 lock (lockObject)
                 {
                     clients.Add(handler);
                 }
 
+                // CRIAR THREAD PARA GERIR A COMUNICAÇÃO DO CLIENTE
                 Thread clientThread = new Thread(handler.HandleClient);
                 clientThread.Start();
             }
         }
 
-        // Enviar mensagem para todos os clientes, exceto quem enviou
+
+        // ENVIA MENSAGEM PARA TODOS OS CLIENTES
         public static void BroadcastMessage(string message, ClientHandler sender)
         {
+            // CRIAÇÃO DO PACOTE DE DADOS
             byte[] data;
             ProtocolSI protocol = new ProtocolSI();
             data = protocol.Make(ProtocolSICmdType.DATA, message);
 
+            // LISTA DE CLIENTES A REMOVER
             List<ClientHandler> disconnectedClients = new List<ClientHandler>();
 
+            // ACESSO SEGURO À LISTA DE CLIENTES
             lock (lockObject)
             {
+                // PERCORRER TODOS OS CLIENTES CONECTADOS
                 foreach (var client in clients.ToList())
                 {
+                    // NÃO ENVIAR DE VOLTA AO CLIENTE QUE ENVIOU
                     if (client != sender)
                     {
                         try
                         {
+                            // ENVIAR A MENSAGEM
                             client.SendMessage(data);
                         }
                         catch
                         {
+                            // EM CASO DE ERRO, MARCAR PARA REMOVER
                             disconnectedClients.Add(client);
                         }
                     }
                 }
 
+                // REMOVER OS CLIENTES DESCONECTADOS
                 foreach (var client in disconnectedClients)
                 {
                     clients.Remove(client);
@@ -76,31 +101,36 @@ namespace Server
         }
 
 
-
-
+        // ENVIAR MENSAGEM DO SERVIDOR PARA TODOS OS CLIENTES
         public static void BroadcastServerMessage(string message)
         {
+            // CRIAÇÃO DO PACOTE DE DADOS
             byte[] data;
             ProtocolSI protocol = new ProtocolSI();
             data = protocol.Make(ProtocolSICmdType.DATA, "[Servidor] " + message);
 
+            // LISTA DE CLIENTES A REMOVER
             List<ClientHandler> disconnectedClients = new List<ClientHandler>();
 
+            // ACESSO SEGURO À LISTA DE CLIENTES
             lock (lockObject)
             {
+                // PERCORRER TODOS OS CLIENTES CONECTADOS
                 foreach (var client in clients.ToList())
                 {
                     try
                     {
+                        // ENVIAR A MENSAGEM
                         client.SendMessage(data);
                     }
                     catch
                     {
+                        // EM CASO DE ERRO, MARCAR PARA REMOVER
                         disconnectedClients.Add(client); // Marca para remoção, sem dar erro na consola
                     }
                 }
 
-                // Remover todos os clientes falhados
+                // REMOVER CLIENTES DESCONECTADOS
                 foreach (var client in disconnectedClients)
                 {
                     clients.Remove(client);
@@ -109,107 +139,14 @@ namespace Server
         }
 
 
-
-
-
+        // REMOVER CLIENTE DA LISTA
         public static void RemoveClient(ClientHandler client)
         {
+            // ACESSO SEGURO À LISTA DE CLIENTES
             lock (lockObject)
             {
                 clients.Remove(client);
             }
         }
-    }
-
-    class ClientHandler
-    {
-        private TcpClient client;
-        private NetworkStream stream;
-
-        private string clientName = "Anónimo";
-
-        private ProtocolSI protocol;
-
-        public ClientHandler(TcpClient client)
-        {
-            this.client = client;
-            this.stream = client.GetStream();
-            this.protocol = new ProtocolSI();
-        }
-
-        public void HandleClient()
-        {
-            try
-            {
-                // Primeiro pacote deve ser o nome
-                ProtocolSI localProtocol = new ProtocolSI();
-                int bytesRead = stream.Read(localProtocol.Buffer, 0, localProtocol.Buffer.Length);
-                if (localProtocol.GetCmdType() == ProtocolSICmdType.USER_OPTION_1)
-                {
-                    clientName = localProtocol.GetStringFromData();
-                    Console.WriteLine("Novo cliente ligado [" + clientName + "]");
-                    Program.BroadcastServerMessage(clientName + " entrou no chat.");
-
-                }
-
-                while (true)
-                {
-                    localProtocol = new ProtocolSI();
-                    bytesRead = stream.Read(localProtocol.Buffer, 0, localProtocol.Buffer.Length);
-                    if (bytesRead == 0) break;
-
-                    switch (localProtocol.GetCmdType())
-                    {
-                        case ProtocolSICmdType.DATA:
-                            string msg = localProtocol.GetStringFromData();
-                            Console.WriteLine("Mensagem recebida [" + clientName + "]: " + msg);
-
-                            // Montar mensagem com nome
-                            string fullMsg = "[" + clientName + "] " + msg;
-                            Program.BroadcastMessage(fullMsg, this);
-
-                            byte[] ack = localProtocol.Make(ProtocolSICmdType.ACK);
-                            stream.Write(ack, 0, ack.Length);
-                            break;
-
-                        case ProtocolSICmdType.EOT:
-                            Console.WriteLine(clientName + " terminou ligação.");
-                            byte[] ackEot = localProtocol.Make(ProtocolSICmdType.ACK);
-                            stream.Write(ackEot, 0, ackEot.Length);
-                            return;
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erro com cliente: " + ex.Message);
-            }
-            finally
-            {
-                stream?.Close();
-                client?.Close();
-                Program.BroadcastServerMessage(clientName + " saiu do chat.");
-                Program.RemoveClient(this);
-            }
-        }
-
-
-        public void SendMessage(byte[] data)
-        {
-            try
-            {
-                stream.Write(data, 0, data.Length);
-            }
-            catch
-            {
-                throw; // Lança para que seja tratado fora, na Broadcast
-            }
-        }
-
-
-
-
-
     }
 }
